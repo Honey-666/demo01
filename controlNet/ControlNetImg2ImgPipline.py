@@ -26,7 +26,7 @@ pipe_controlnet.enable_xformers_memory_efficient_attention()
 pipe_controlnet.enable_model_cpu_offload()
 
 # using image with edges for our canny controlnet
-control_image  = Image.open('vermeer_canny_edged.png')
+control_image = Image.open('vermeer_canny_edged.png')
 
 result_img = pipe_controlnet(controlnet_conditioning_image=control_image,
                              image=input_image,

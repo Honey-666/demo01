@@ -27,7 +27,6 @@ from diffusers.utils import (
 
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
-
 class ControlNetProcessor(object):
     def __init__(
         self,
@@ -163,7 +162,6 @@ class ControlNetProcessor(object):
         ]
         mid_block_res_sample *= self.conditioning_scale
         return (down_block_res_samples, mid_block_res_sample)
-
 
 EXAMPLE_DOC_STRING = """
     Examples:
@@ -763,7 +761,7 @@ class StableDiffusionControlNetImg2ImgPipeline(DiffusionPipeline):
     @replace_example_docstring(EXAMPLE_DOC_STRING)
     def __call__(
         self,
-        processors: List[ControlNetProcessor],
+        # processors: List[ControlNetProcessor],
         prompt: Union[str, List[str]] = None,
         image: Union[torch.Tensor, PIL.Image.Image] = None,
         controlnet_conditioning_image: Union[
