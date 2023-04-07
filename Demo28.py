@@ -109,9 +109,6 @@ def is_white(img: Image):
 #     source_img.save('./img/768/' + f.replace("_result", "_768"))
 
 
-files = os.listdir('./img/768PNG')
-for f in files:
-    print(f)
-    result_path = './img/768PNG/' + f
-    result_img = resize768_pal(result_path)
-    result_img.save('./img/768PNG/result/' + f.replace('png', 'jpg'))
+img = Image.open('img/bag.png')
+mode = img.mode
+print(mode)

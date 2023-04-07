@@ -4,20 +4,17 @@
 # @Time：2023/3/17 14:44
 # @Website：www.xxx.com
 # @Version：V1.0
-import io
-import json
 import sys
 import time
-from time import sleep
 
 import cv2
 import numpy
 
 import torch
 import inspect
-from python_bigbigwork_util import DefaultNacos, LoggingUtil
-from PIL import Image, ImageChops
-from stable_diffusion_multi_controlnet import StableDiffusionMultiControlNetPipeline, ControlNetProcessor
+from python_bigbigwork_util import LoggingUtil
+from PIL import Image
+from controlNet.stable_diffusion_multi_controlnet import StableDiffusionMultiControlNetPipeline, ControlNetProcessor
 from diffusers import (ControlNetModel)
 
 my_logger = LoggingUtil.get_logging()

@@ -23,7 +23,6 @@ pipe_controlnet = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(
 
 pipe_controlnet.scheduler = UniPCMultistepScheduler.from_config(pipe_controlnet.scheduler.config)
 pipe_controlnet.enable_xformers_memory_efficient_attention()
-pipe_controlnet.enable_model_cpu_offload()
 
 # using image with edges for our canny controlnet
 control_image = Image.open('vermeer_canny_edged.png')
