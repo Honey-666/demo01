@@ -7,6 +7,6 @@
 import re
 
 from PIL import Image
-models = ['../models/sd-controlnet-scribble','../models/sd-controlnet-canny']
-s = re.sub('.*/', '', str(models))
-print(s)
+models = ['scribble','canny']
+
+print(",".join(models))

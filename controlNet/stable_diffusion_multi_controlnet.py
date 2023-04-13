@@ -44,12 +44,10 @@ class ControlNetProcessor(object):
         controlnet: ControlNetModel,
         image: Union[torch.FloatTensor, PIL.Image.Image, List[torch.FloatTensor], List[PIL.Image.Image]],
         conditioning_scale: float = 1.0,
-        weight: float = 1.0
     ):
         self.controlnet = controlnet
         self.image = image
         self.conditioning_scale = conditioning_scale
-        self.weight = weight
 
     def _default_height_width(self, height, width, image):
         if isinstance(image, list):
