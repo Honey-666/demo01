@@ -34,6 +34,7 @@ from diffusers.utils import (
 from diffusers.pipeline_utils import DiffusionPipeline
 from diffusers.pipelines.stable_diffusion import StableDiffusionPipelineOutput, StableDiffusionSafetyChecker
 from diffusers.models.controlnet import ControlNetOutput
+from diffusers.loaders import TextualInversionLoaderMixin
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
 
@@ -214,11 +215,14 @@ EXAMPLE_DOC_STRING = """
 """
 
 
-class StableDiffusionMultiControlNetPipeline(DiffusionPipeline):
+class StableDiffusionMultiControlNetPipeline(DiffusionPipeline,TextualInversionLoaderMixin):
     r"""
     Pipeline for text-to-image generation using Stable Diffusion with ControlNet guidance.
     This model inherits from [`DiffusionPipeline`]. Check the superclass documentation for the generic methods the
     library implements for all the pipelines (such as downloading or saving, running on a particular device, etc.)
+
+    In addition the pipeline inherits the following loading methods:
+    - *Textual-Inversion*: [`loaders.TextualInversionLoaderMixin.load_textual_inversion`]
     Args:
         vae ([`AutoencoderKL`]):
             Variational Auto-Encoder (VAE) Model to encode and decode images to and from latent representations.
@@ -409,6 +413,10 @@ class StableDiffusionMultiControlNetPipeline(DiffusionPipeline):
             batch_size = prompt_embeds.shape[0]
 
         if prompt_embeds is None:
+            # textual inversion: procecss multi-vector tokens if necessary
+            if isinstance(self, TextualInversionLoaderMixin):
+                prompt = self.maybe_convert_prompt(prompt, self.tokenizer)
+
             text_inputs = self.tokenizer(
                 prompt,
                 padding="max_length",
@@ -468,6 +476,10 @@ class StableDiffusionMultiControlNetPipeline(DiffusionPipeline):
                 )
             else:
                 uncond_tokens = negative_prompt
+
+            # textual inversion: procecss multi-vector tokens if necessary
+            if isinstance(self, TextualInversionLoaderMixin):
+                uncond_tokens = self.maybe_convert_prompt(uncond_tokens, self.tokenizer)
 
             max_length = prompt_embeds.shape[1]
             uncond_input = self.tokenizer(

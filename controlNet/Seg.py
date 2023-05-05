@@ -17,8 +17,8 @@ from controlnet_utils import ade_palette
 image_processor = AutoImageProcessor.from_pretrained("openmmlab/upernet-convnext-small")
 image_segmentor = UperNetForSemanticSegmentation.from_pretrained("openmmlab/upernet-convnext-small")
 
-image = Image.open('../test_img/' + sys.argv[1]).convert("RGB")
-# image = load_image("https://huggingface.co/lllyasviel/sd-controlnet-seg/resolve/main/images/house.png").convert('RGB')
+# image = Image.open('../test_img/' + sys.argv[1]).convert("RGB")
+image = Image.open('../img/20230407102039.png').convert("RGB")
 s = time.time()
 pixel_values = image_processor(image, return_tensors="pt").pixel_values
 
@@ -35,8 +35,9 @@ for label, color in enumerate(palette):
     color_seg[seg == label, :] = color
 
 color_seg = color_seg.astype(np.uint8)
-
+color_seg = cv2.resize(color_seg, (1984, 1280), interpolation=cv2.INTER_NEAREST)
 image = Image.fromarray(color_seg)
 spend = time.time() - s
 print(spend)
-image.save('seg_scribble_out.png')
+
+image.save('seg_scribble_out_1.png')

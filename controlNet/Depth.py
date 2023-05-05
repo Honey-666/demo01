@@ -29,10 +29,12 @@ def resize_image(input_image, resolution):
 # image = Image.open('../test_img/' + sys.argv[1])
 
 # depth_estimator = pipeline('depth-estimation', model='Intel/dpt-hybrid-midas')
-depth_estimator = pipeline('depth-estimation', model='Intel/dpt-large')
-img = cv2.imread('../img/stormtrooper.png')
-image = resize_image(img, 1360)
-image = Image.fromarray(image)
+# depth_estimator = pipeline('depth-estimation', model='Intel/dpt-large')
+depth_estimator = pipeline('depth-estimation')
+image = Image.open('../img/a.jpg')
+# img = cv2.imread('../img/c5da0eaf040749028109948fc424ae1c.jpg')
+# image = resize_image(img, 1360)
+# image = Image.fromarray(img)
 s = time.time()
 image = depth_estimator(image)['depth']
 image = np.array(image)
@@ -41,4 +43,4 @@ image = np.concatenate([image, image, image], axis=2)
 image = Image.fromarray(image)
 spend = time.time() - s
 print(spend)
-image.save('depth_scribble_out2-1.png')
+image.save('depth_scribble_out.png')
