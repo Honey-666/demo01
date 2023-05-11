@@ -14,7 +14,7 @@ from fastapi import Body
 
 network_model = Network('../../models/annotator/ckpts/network-bsds500.pth')
 hed = HEDdetector(network_model)
-image = Image.open('../img/bag.png')
+image = Image.open('../../img/control/bag.png')
 s = time.time()
 image = hed(image, scribble=True)
 spend = time.time() - s

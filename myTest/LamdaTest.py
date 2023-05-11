@@ -6,6 +6,7 @@
 # @Version：V1.0
 import cv2
 import numpy as np
+from PIL import Image
 
 # img_w, img_h = image.size
 # my_logger.info('img size：%d ,%d', img_w, img_h)
@@ -18,7 +19,10 @@ import numpy as np
 #     my_logger.info('img handle size：%d ,%d', img_w, img_h)
 #     image = image.resize((img_w, img_h))
 
-im = cv2.imread('./768.jpg')
-h, w, c = im.shape
-im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
-cv2.imwrite('768x1024.jpg', im)
+# im = cv2.imread('./768.jpg')
+# h, w, c = im.shape
+# im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
+# cv2.imwrite('768x1024.jpg', im)
+im = Image.open('mlsd_preprocessor_img.png')
+im = im.resize((768, 352))
+im.save('mlsd_preprocessor_img.png')

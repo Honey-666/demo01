@@ -15,8 +15,8 @@ def cv_show(im):
 
 
 # 读取两张图片
-img1 = cv2.imread('../img/seg5.png')
-img2 = cv2.imread('../img/seg6.png')
+img1 = cv2.imread('../img/control/seg5.png')
+img2 = cv2.imread('../img/control/seg6.png')
 # h, w, c = img2.shape
 # img1 = cv2.resize(img1, (w, h), interpolation=cv2.INTER_AREA)
 # img1 = cv2.resize(img1, (img1.shape[1] // 2, img1.shape[0] // 2), interpolation=cv2.INTER_AREA)

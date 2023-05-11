@@ -14,7 +14,7 @@ from PIL import Image
 low_threshold = 100
 high_threshold = 200
 
-image = cv2.imread('../test_img/' + sys.argv[1])
+image = cv2.imread('../../img/control/55.jpg')
 s = time.time()
 image = cv2.Canny(image, low_threshold, high_threshold)
 image = image[:, :, None]

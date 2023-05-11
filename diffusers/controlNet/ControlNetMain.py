@@ -16,7 +16,7 @@ from python_bigbigwork_util.RabbitReceiveMq import RabbitReceiveMq
 from python_bigbigwork_util.RabbitSendMq import RabbitSendMq
 from PIL import Image, ImageChops
 from TranslateUtil import en_to_zh
-from controlNet.stable_diffusion_multi_controlnet import StableDiffusionMultiControlNetPipeline, ControlNetProcessor
+from diffusers.controlNet.stable_diffusion_multi_controlnet import StableDiffusionMultiControlNetPipeline, ControlNetProcessor
 from diffusers import (ControlNetModel)
 
 my_logger = LoggingUtil.get_logging()

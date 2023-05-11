@@ -17,12 +17,13 @@ from realesrgan import RealESRGANer
 
 def img_super(input_img, scale):
     print('img_super scale=', scale)
-    model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
+    # model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
+    anime_model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=6, num_grow_ch=32, scale=4)
     bg_upsampler = RealESRGANer(
         scale=4,  # 这里的值不能修改不然放大一倍或两倍图片会有问题
-        model_path='weights/RealESRGAN_x4plus.pth',
+        model_path='weights/RealESRGAN_x4plus_anime_6B.pth',
         dni_weight=None,
-        model=model,
+        model=anime_model,
         tile=400,
         half=True,
         tile_pad=10,

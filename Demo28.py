@@ -109,6 +109,6 @@ def is_white(img: Image):
 #     source_img.save('./img/768/' + f.replace("_result", "_768"))
 
 
-img = Image.open('img/bag.png')
+img = Image.open('img/control/bag.png')
 mode = img.mode
 print(mode)
