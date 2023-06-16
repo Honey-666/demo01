@@ -41,7 +41,6 @@ js = {
                   torch.Generator(device='cuda').manual_seed(30154578),
                   torch.Generator(device='cuda').manual_seed(8258277)]
 }
-
 result_img = pipe_controlnet(**js).images
 print(result_img)
 for (i, img) in enumerate(result_img):

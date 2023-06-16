@@ -29,6 +29,7 @@ pipe = StableDiffusionControlNetPipeline.from_pretrained(
     "../models/stable-diffusion-v1-5", controlnet=controlnet, torch_dtype=torch.float16,
     scheduler=dpm_scheduler
 ).to("cuda")
+StableDiffusionControlNetPipeline.from_pretrained()
 
 pipe.enable_xformers_memory_efficient_attention()
 generator = torch.Generator(device='cuda').manual_seed(1430804514)

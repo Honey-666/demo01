@@ -23,6 +23,9 @@ from PIL import Image
 # h, w, c = im.shape
 # im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
 # cv2.imwrite('768x1024.jpg', im)
-im = Image.open('mlsd_preprocessor_img.png')
-im = im.resize((768, 352))
-im.save('mlsd_preprocessor_img.png')
+scores_dict = {'语文': 105, '数学': 140, '英语': 120}
+for key in scores_dict.keys():
+    print(','.join(scores_dict.keys()))
+
+s = '1'
+print(s.split(','))
