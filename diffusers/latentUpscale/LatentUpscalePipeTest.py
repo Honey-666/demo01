@@ -8,7 +8,7 @@ import os
 
 from PIL import Image
 
-from diffusers import StableDiffusionLatentUpscalePipeline, DPMSolverMultistepScheduler
+from diffusers import StableDiffusionPipeline,StableDiffusionLatentUpscalePipeline, DPMSolverMultistepScheduler
 import torch
 
 model_id = "/data/sd-x2-latent-upscaler"
@@ -32,3 +32,6 @@ for f in files:
     ).images[0]
 
     upscaled_image.save("./shinei/" + filename + "_upscale.jpg")
+
+repo_id = ''
+StableDiffusionPipeline.from_ckpt(repo_id)

@@ -4,6 +4,8 @@
 # @Time：2023/4/19 15:17
 # @Website：www.xxx.com
 # @Version：V1.0
+import decimal
+
 import cv2
 import numpy as np
 from PIL import Image
@@ -23,9 +25,11 @@ from PIL import Image
 # h, w, c = im.shape
 # im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
 # cv2.imwrite('768x1024.jpg', im)
-scores_dict = {'语文': 105, '数学': 140, '英语': 120}
-for key in scores_dict.keys():
-    print(','.join(scores_dict.keys()))
 
-s = '1'
-print(s.split(','))
+f = 0.23156
+from decimal import Decimal
+
+f1 = Decimal(f).quantize(Decimal('0.00'), rounding=decimal.ROUND_UP)
+f2 = Decimal(f).quantize(Decimal('0.00'), rounding=decimal.ROUND_HALF_UP)
+print(f1)
+print(f2)

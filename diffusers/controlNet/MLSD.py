@@ -13,7 +13,7 @@ import numpy as np
 import torch
 from PIL import Image
 from controlnet_aux import MLSDdetector
-from controlnet_aux.mlsd import MobileV2_MLSD_Large, apply_mlsd
+# from controlnet_aux.mlsd import MobileV2_MLSD_Large, apply_mlsd
 from controlnet_aux.util import HWC3
 from einops import rearrange
 
@@ -165,22 +165,17 @@ def resize_image_with_pad(input_image, resolution):
     return safer_memory(img_padded), remove_pad
 
 
-mlsd = MLSDdetector.from_pretrained('lllyasviel/ControlNet')
+mlsd = MLSDdetector.from_pretrained('C:\\Users\\bbw\\.cache\\huggingface\\hub\\models--lllyasviel--ControlNet\\snapshots\\e78a8c4a5052a238198043ee5c0cb44e22abb9f7\\annotator\\ckpts')
 
 
-def mlsd_pre(img, res=512, thr_a=0.1, thr_b=0.1, **kwargs):
-    thr_v, thr_d = thr_a, thr_b
-    img = resize_image(HWC3(img), res)
-    image = apply_mlsd(img, thr_v, thr_d)
-    image = detectmap_proc(image, 'mlsd', 'Crop and Resize', 352, 768)
-    return image
+
 
 
 # image = Image.open('../test_img/' + sys.argv[1])
 image = cv2.imread('../../img/control/shinei.png')
 s = time.time()
-mlsd(image)
-image = mlsd_pre(image)
+image = mlsd(image)
 spend = time.time() - s
 print(spend)
-cv2.imwrite('mlsd_scribble_out.png', image)
+image.save('mlsd_scribble_out.png')
+# cv2.imwrite('mlsd_scribble_out.png', image)
