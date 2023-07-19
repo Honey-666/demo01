@@ -8,6 +8,7 @@ import decimal
 
 import cv2
 import numpy as np
+import torch
 from PIL import Image
 
 # img_w, img_h = image.size
@@ -25,11 +26,11 @@ from PIL import Image
 # h, w, c = im.shape
 # im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
 # cv2.imwrite('768x1024.jpg', im)
-
-f = 0.23156
-from decimal import Decimal
-
-f1 = Decimal(f).quantize(Decimal('0.00'), rounding=decimal.ROUND_UP)
-f2 = Decimal(f).quantize(Decimal('0.00'), rounding=decimal.ROUND_HALF_UP)
-print(f1)
-print(f2)
+output = cv2.imread('../img/control/boy.png')
+outscale = 2
+w_input = 512
+h_input = 512
+output = cv2.resize(output, (int(w_input * outscale), int(h_input * outscale)), interpolation=cv2.INTER_LANCZOS4)
+cv2.imshow('demo', output)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
