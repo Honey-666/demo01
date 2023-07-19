@@ -1,7 +1,0 @@
-__pycache__
-logs
-.git
-.ipynb_checkpoints/
-.idea
-*.ckpt
-*.safetensors
