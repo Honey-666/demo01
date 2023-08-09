@@ -32,7 +32,7 @@ def super_corp_region(size: int, source_big: int, crop_width: int, left: int, ri
     return int(new_left), int(new_right)
 
 
-im = Image.open('./img/aaaa.jpg')
+im = Image.open('./img/tmpj6b60u7r.PNG')
 diff = ImageChops.add(im, im)
 bbox = diff.getbbox()
 print('bbox=', bbox)

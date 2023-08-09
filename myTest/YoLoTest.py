@@ -4,11 +4,37 @@
 # @Time：2023/7/7 13:43
 # @Website：www.xxx.com
 # @Version：V1.0
+import math
 import time
 
 import cv2
+import numpy as np
 from PIL import Image, ImageDraw
 from ultralytics import YOLO
+
+
+# 获取扩大后的裁剪区域的两个像素点
+def padding_corp_region(size: int, source_big: int, crop_width: int, left: int, right: int):
+    # 首先减去截去图片的宽度 然后取一半
+    half = (size - crop_width) // 2
+    # 然后用一半减去左边距，如果大于0表示头像靠近左边，要截取256 * 256的话就要在右边多取点像素
+    left_diff = half - left
+    if left_diff >= 0:  # 大于等于0证明头像偏右或居中
+        # 这里证明右边不止要加一般的像素，还要把左边多出来的也加上去
+        right_add_focus = half + left_diff
+        new_left = 0
+        new_right = right + right_add_focus
+    else:  # 小于0证明左边可以加上一半的像素，判断右边
+        # 同样的方法去判断右边距是否能够加一半
+        right_diff = right + half
+        if right_diff <= source_big:  # 右边可以完整的加上一半像素
+            new_left = math.fabs(left_diff)
+            new_right = right_diff
+        else:
+            left_add_focus = right_diff - source_big
+            new_left = math.fabs(left_diff) - left_add_focus
+            new_right = source_big
+    return int(new_left), int(new_right)
 
 
 def create_mask_from_bbox(bboxes: list[list[float]], shape: tuple[int, int]) -> list[Image.Image]:
@@ -66,27 +92,64 @@ def calc_max_face(bboxes):
     return max_tuple
 
 
-image = Image.open('./yolo_test3.jpg')
+image = Image.open('./bigbigai.com-1690539927794.jpg')
 model_path = 'C:\\Users\\bbw\\.cache\\huggingface\\hub\\models--Bingsu--adetailer\\snapshots\\fdb6e26f5212c6a7184b359f62cc4b41fd731bb3\\face_yolov8s.pt'
 
 model = YOLO(model_path)
 
-for _ in range(5):
-    s = time.time()
-    pred = model(image, conf=0.3)
-    bboxes = pred[0].boxes.xyxy.cpu().numpy()
-    print('spend time=', time.time() - s)
+pred = model(image, conf=0.5)
+bboxes = pred[0].boxes.xyxy.cpu().numpy()
 
-    if bboxes.size == 0:
-        masks = None
+mask_idx = 0
+if bboxes.size == 0:
+    masks = None
+else:
+    bboxes = bboxes.tolist()
+    mask_idx = calc_max_face(bboxes)[0]
+
+    if pred[0].masks is None:
+        masks = create_mask_from_bbox([bboxes[mask_idx]], image.size)
     else:
-        bboxes = bboxes.tolist()
-        mask_idx = calc_max_face(bboxes)[0]
+        masks = mask_to_pil(pred[0].masks.data, image.size)
 
-        if pred[0].masks is None:
-            masks = create_mask_from_bbox([bboxes[mask_idx]], image.size)
-        else:
-            masks = mask_to_pil(pred[0].masks.data, image.size)
+mask_img = masks[0]
+bbox = bboxes[mask_idx]
+print(bbox)
+left = bbox[0]
+upper = bbox[1]
+right = bbox[2]
+lower = bbox[3]
+
+diff_width = right - left
+diff_height = lower - upper
+source_width, source_height = mask_img.size
+face_w = face_h = None
+if diff_width < 512 and diff_height < 512:
+    nf, nr = padding_corp_region(diff_width + (32 * 2), source_width, diff_width, left, right)
+    nt, nb = padding_corp_region(diff_height + (32 * 2), source_height, diff_height, upper, lower)
+    print(nf, nt, nr, nb)
+    bbox = (nf, nt, nr, nb)
+    crop_face = mask_img.crop(bbox)
+    crop_source_img = image.crop(bbox)
+    mask_img.show()
+    crop_face.show()
+    crop_source_img.show()
+    face_w, face_h = crop_face.size
+    max_len = max(face_w, face_h)
+    ratio = 512 / max_len
+    super_width = int(face_w * ratio)
+    super_height = int(face_h * ratio)
+    # restored_img = cv2.resize(cv2.cvtColor(np.asarray(crop_face), cv2.COLOR_RGB2BGR), (super_width, super_height),
+    #                           interpolation=cv2.INTER_LANCZOS4)
+    # super_mask_face = Image.fromarray(cv2.cvtColor(restored_img, cv2.COLOR_BGR2RGB))
+    # restored_img2 = cv2.resize(cv2.cvtColor(np.asarray(crop_source_img), cv2.COLOR_RGB2BGR), (super_width, super_height),
+    #                           interpolation=cv2.INTER_LANCZOS4)
+    # super_source_face = Image.fromarray(cv2.cvtColor(restored_img2, cv2.COLOR_BGR2RGB))
+    super_mask_face = crop_face.resize((super_width, super_height), resample=Image.LANCZOS)
+    super_source_face = crop_source_img.resize((super_width, super_height), resample=Image.LANCZOS)
+    super_mask_face.show()
+    super_source_face.show()
+
 # preview = pred[0].plot()
 # preview = cv2.cvtColor(preview, cv2.COLOR_BGR2RGB)
 # preview = Image.fromarray(preview)

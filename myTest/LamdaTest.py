@@ -5,11 +5,12 @@
 # @Website：www.xxx.com
 # @Version：V1.0
 import decimal
+import os.path
 
 import cv2
 import numpy as np
 import torch
-from PIL import Image
+from PIL import Image, ImageOps
 
 # img_w, img_h = image.size
 # my_logger.info('img size：%d ,%d', img_w, img_h)
@@ -26,11 +27,5 @@ from PIL import Image
 # h, w, c = im.shape
 # im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
 # cv2.imwrite('768x1024.jpg', im)
-output = cv2.imread('../img/control/boy.png')
-outscale = 2
-w_input = 512
-h_input = 512
-output = cv2.resize(output, (int(w_input * outscale), int(h_input * outscale)), interpolation=cv2.INTER_LANCZOS4)
-cv2.imshow('demo', output)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+
+print(not 1)
