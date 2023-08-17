@@ -28,4 +28,4 @@ from PIL import Image, ImageOps
 # im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
 # cv2.imwrite('768x1024.jpg', im)
 
-print(not 1)
+Image.open('C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\')

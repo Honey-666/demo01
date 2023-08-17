@@ -4,22 +4,13 @@
 # @Time：2023/6/25 16:38
 # @Website：www.xxx.com
 # @Version：V1.0
-import sys
-
 import cv2
-from PIL import Image
-from diffusers import DPMSolverMultistepScheduler
-import requests
-import json
+import numpy as np
 
-# source_img = cv2.imread('../img/test/20230724-110418.jpg')
-# mask_img = cv2.imread('../img/test/20230724-110413.jpg')
-# new_img = cv2.add(source_img, mask_img)
-# cv2.imwrite('../img/test/20230724-result.jpg', new_img)
-# cv2.imshow('demo', new_img)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
 from PIL import Image
+from controlnet_aux.util import HWC3
+
+from diffuser.controlNet.lvminthin import lvmin_thin, nake_nms
 
 
 def img_show(img):
@@ -91,7 +82,3 @@ output_img_path2 = "../img/test/output2.jpg"  # 输出图片路径
 
 fill_white_area(mask_img_path, overlay_img_path, source_img_path, output_img_path)
 # fill_white_area2(mask_img_path, overlay_img_path, output_img_path2)
-
-
-image_masked = Image.new('RGBa', (image.width, image.height))
-image_masked.paste(image.convert("RGBA").convert("RGBa"), mask=ImageOps.invert(self.mask_for_overlay.convert('L')))
