@@ -10,17 +10,17 @@ from diffusers import (
     StableDiffusionControlNetPipeline, DPMSolverMultistepScheduler,StableDiffusionControlNetImg2ImgPipeline
 )
 
-image = Image.open('../../img/control/pose.png')
-
-
-model_body = Body('C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\ckpts\\body_pose_model.pth')
-model_hand = Hand('C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\ckpts\\hand_pose_model.pth')
-model_face = Face('C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\ckpts\\facenet.pth')
-processor = OpenposeDetector(model_body, model_hand)
-for _ in range(5):
-    s = time.time()
-    control_image = processor(image, hand_and_face=True)
-    print(time.time() - s)
+# image = Image.open('../../img/control/pose.png')
+#
+#
+# model_body = Body('C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\ckpts\\body_pose_model.pth')
+# model_hand = Hand('C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\ckpts\\hand_pose_model.pth')
+# model_face = Face('C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\ckpts\\facenet.pth')
+# processor = OpenposeDetector(model_body, model_hand)
+# for _ in range(5):
+#     s = time.time()
+#     control_image = processor(image, hand_and_face=True)
+#     print(time.time() - s)
 # control_image.save("openpose_control.png")
 #
 # controlnet = ControlNetModel.from_pretrained("../models/control-v11p-sd15-openpose", variant="fp16",torch_dtype=torch.float16).to(

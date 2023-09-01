@@ -80,5 +80,24 @@ overlay_img_path = "../img/test/20230724-110418.jpg"  # 另一张彩色图片路
 output_img_path = "../img/test/output.jpg"  # 输出图片路径
 output_img_path2 = "../img/test/output2.jpg"  # 输出图片路径
 
-fill_white_area(mask_img_path, overlay_img_path, source_img_path, output_img_path)
+# fill_white_area(mask_img_path, overlay_img_path, source_img_path, output_img_path)
 # fill_white_area2(mask_img_path, overlay_img_path, output_img_path2)
+from torchvision import transforms
+import matplotlib.pyplot as plt
+
+trans_pil = transforms.ToPILImage()
+
+pli_img = Image.open(source_img_path)
+pli_img.show()
+transform = transforms.Compose([transforms.ToTensor()])
+tensor_img = transform(pli_img)
+
+# 显示PyTorch张量表示的图像
+plt.imshow(tensor_img.permute(1, 2, 0))  # 调整维度顺序以适应Matplotlib的显示
+plt.axis('off')  # 关闭坐标轴
+plt.show()
+
+resize_transform = transforms.Resize((1536, 2048))
+resized_img_tensor = resize_transform(tensor_img)
+new_img = trans_pil(resized_img_tensor)
+new_img.show()

@@ -28,4 +28,6 @@ from PIL import Image, ImageOps
 # im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
 # cv2.imwrite('768x1024.jpg', im)
 
-Image.open('C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\')
+
+s = '../models/Stable-Diffusion/xsarchitectural_v11'
+print(s.split('/')[-1])

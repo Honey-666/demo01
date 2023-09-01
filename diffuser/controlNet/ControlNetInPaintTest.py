@@ -5,7 +5,7 @@
 # @Website：www.xxx.com
 # @Version：V1.0
 # !pip install transformers accelerate
-from diffusers import StableDiffusionControlNetInpaintPipeline, ControlNetModel, DDIMScheduler
+from diffusers import StableDiffusionControlNetInpaintPipeline, ControlNetModel, DDIMScheduler,StableDiffusionControlNetPipeline
 from diffusers.pipelines.controlnet import MultiControlNetModel
 import numpy as np
 import torch
