@@ -43,7 +43,7 @@ from utils.util import resize_image
 low_threshold = 100
 high_threshold = 200
 
-image = cv2.imread('../../img/control/20230728-154401.jpg')
+image = cv2.imread('../../../img/control/20230728-154401.jpg')
 s = time.time()
 image = HWC3(image)
 image = resize_image(image, 512)

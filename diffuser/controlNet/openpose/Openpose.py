@@ -13,7 +13,7 @@ model_path = 'C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\c
 # openpose = OpenposeDetector(pose_body, pose_hand, pose_face)
 openpose = OpenposeDetector.from_pretrained(model_path).to('cuda')
 
-img_path = '../../img/control/cfe82f12f7814acca6c7ea9f61f722ad.jpg'
+img_path = '../../../img/control/cfe82f12f7814acca6c7ea9f61f722ad.jpg'
 # img_path = 'C:\\Users\\bbw\\Desktop\\8eb316ba8f2642ada2c0a39206b21992.jpg'
 img = Image.open(img_path)
 for _ in range(5):

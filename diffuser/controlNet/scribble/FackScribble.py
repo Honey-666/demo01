@@ -17,7 +17,7 @@ from controlnet_aux.hed import ControlNetHED_Apache2
 # hed = HEDdetector(netNetwork)
 # network_model = Network('../../models/annotator/ckpts/network-bsds500.pth')
 hed = HEDdetector.from_pretrained("C:\\Users\\bbw\\.cache\\huggingface\\hub\\models--lllyasviel--Annotators\\snapshots\\9a7d84251d487d11c4834466779de6b0d2c44486")
-image = Image.open('../../img/control/bag.png')
+image = Image.open('../../../img/control/bag.png')
 s = time.time()
 image = hed(image, scribble=True)
 spend = time.time() - s
