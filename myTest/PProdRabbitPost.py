@@ -1,3 +1,5 @@
+import re
+
 import requests
 import json
 
@@ -81,11 +83,24 @@ data_str = '''
 }
 '''
 
-for v in sorted('v1.5'.split(',')):
-    for i in range(5):
-        js['payload'] = data_str.replace("%s", v)
+with open('C:\\Users\\bbw\\Desktop\\AI_qgn.txt', encoding='utf-8') as f:
+    lines = f.readlines()
+    for line in lines:
+        line = line.replace('}|,', '}')
+        line = re.sub(r'\\(.)', r'\1', line)
+        jo = json.loads(line)
+        js['payload'] = json.dumps(jo)
         resp = requests.post('http://47.98.234.186:15672/api/exchanges/%2Fneptune.test/amq.default/publish',
                              headers=headers, json=js)
 
         print(resp.status_code)
         print(resp.content.decode('utf-8'))
+
+# for v in sorted('v1.5'.split(',')):
+#     for i in range(5):
+#         js['payload'] = data_str.replace("%s", v)
+#         resp = requests.post('http://47.98.234.186:15672/api/exchanges/%2Fneptune.test/amq.default/publish',
+#                              headers=headers, json=js)
+#
+#         print(resp.status_code)
+#         print(resp.content.decode('utf-8'))

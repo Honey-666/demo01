@@ -28,6 +28,10 @@ from PIL import Image, ImageOps
 # im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
 # cv2.imwrite('768x1024.jpg', im)
 
-
-s = '../models/Stable-Diffusion/xsarchitectural_v11'
-print(s.split('/')[-1])
+# i = 46815649846516843518648
+# generator = torch.Generator(device='cpu')
+# seeds = [generator.seed() if len(str(generator.seed())) < 10 else generator.seed() for _ in range(3)]
+basic_size = (512, 768)
+w, h = basic_size
+print(w)
+print(h)

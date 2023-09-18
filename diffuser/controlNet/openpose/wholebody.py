@@ -6,7 +6,7 @@ from .cv_ox_det import inference_detector
 from .cv_ox_pose import inference_pose
 
 from typing import List, Optional
-from .types import PoseResult, BodyResult, Keypoint
+from controlnet_aux.open_pose import PoseResult, BodyResult, Keypoint
 
 
 class Wholebody:
