@@ -4,18 +4,17 @@
 # @Time：2023/7/12 15:08
 # @Website：www.xxx.com
 # @Version：V1.0
+import os
+
 import cv2
 import matplotlib.pyplot as plt
 
 
-
 def load_upscale_model():
-    # from basicsr.archs.rrdbnet_arch import RRDBNet
     from basicsr.archs.rrdbnet_arch import RRDBNet
     from realesrgan import RealESRGANer
 
     model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
-    # model = RRDBNet(num_in_ch=3, num_out_ch=4)
 
     upscale = RealESRGANer(
         scale=4,  # 这里的值不能修改不然放大一倍或两倍图片会有问题
@@ -30,14 +29,17 @@ def load_upscale_model():
     return upscale
 
 
-input_img = cv2.imread('../img/control/toy.png')
+filename_lst = os.listdir('../img/watermark-result')
 bg_upsampler = load_upscale_model()
-restored_img, _ = bg_upsampler.enhance(input_img, outscale=1.25)
+for filename in filename_lst:
+    filepath = '../img/watermark-result/' + filename
+    print(filepath)
+    input_img = cv2.imread(filepath)
 
-print(restored_img.shape)
+    restored_img, _ = bg_upsampler.enhance(input_img, outscale=2)
 
-(r, g, b) = cv2.split(restored_img)
-img = cv2.merge([b, g, r])
-plt.title('restored_img')
-plt.imshow(img)
-plt.show()
+    print(restored_img.shape)
+    name = filename.split('.')[0]
+    cv2.imwrite('../img/watermark-result-upscale/2/' + name + '.jpg', restored_img)
+
+

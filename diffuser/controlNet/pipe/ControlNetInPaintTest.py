@@ -5,19 +5,23 @@
 # @Website：www.xxx.com
 # @Version：V1.0
 # !pip install transformers accelerate
-from diffusers import StableDiffusionControlNetInpaintPipeline, ControlNetModel, DDIMScheduler,StableDiffusionControlNetPipeline
+from diffusers import StableDiffusionControlNetInpaintPipeline, ControlNetModel, DDIMScheduler, \
+    StableDiffusionControlNetPipeline, UniPCMultistepScheduler, DPMSolverMultistepScheduler
 from diffusers.pipelines.controlnet import MultiControlNetModel
 import numpy as np
 import torch
 from PIL import Image
 
-init_image = Image.open('../../img/control/boy.png')
-init_image = init_image.resize((512, 512))
+# init_image = Image.open('../../img/control/boy.png')
+# init_image = init_image.resize((512, 512))
+#
+generator = torch.Generator(device="cuda").manual_seed(1)
 
-generator = torch.Generator(device="cpu").manual_seed(1)
 
-mask_image = Image.open('../../img/control/boy_mask.png')
-mask_image = mask_image.resize((512, 512))
+#
+# mask_image = Image.open('../../img/control/boy_mask.png')
+# mask_image = mask_image.resize((512, 512))
+
 
 def make_inpaint_condition(image, image_mask):
     # astype(np.float32) / 255.0:   uint8数据转float32
@@ -34,31 +38,46 @@ def make_inpaint_condition(image, image_mask):
     return image
 
 
-control_image = make_inpaint_condition(init_image, mask_image)
+# control_image = make_inpaint_condition(init_image, mask_image)
+canny_img = Image.open('C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\20231030-145313.png').convert("RGB")
+pose_img = Image.open('C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\20231030-145327.png').convert("RGB")
+mask_img = Image.open('C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\20231030-145323.png').convert("RGB")
+img = Image.open('C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\20231030-145318.png').convert("RGB")
 
-controlnet = ControlNetModel.from_pretrained(
-    "C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\control-v11p-sd15-inpaint", torch_dtype=torch.float16,
+mask_img = mask_img.resize(canny_img.size)
+img = img.resize(canny_img.size)
+
+control_image = [canny_img, pose_img]
+
+controlnet1 = ControlNetModel.from_pretrained(
+    "C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\control-v11p-sd15-canny", torch_dtype=torch.float16,
     variant="fp16"
-)
-multi_control = MultiControlNetModel([controlnet])
-pipe = StableDiffusionControlNetInpaintPipeline.from_pretrained(
-    "C:\\work\\pythonProject\\aidazuo\\models\\Stable-diffusion\\stable-diffusion-v1-5", controlnet=controlnet,
-    torch_dtype=torch.float16
-)
+).to('cuda')
 
-pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
+controlnet2 = ControlNetModel.from_pretrained(
+    "C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\control-v11p-sd15-openpose", torch_dtype=torch.float16,
+    variant="fp16"
+).to('cuda')
+
+pipe = StableDiffusionControlNetInpaintPipeline.from_pretrained(
+    "C:\\work\\pythonProject\\aidazuo\\models\\Stable-diffusion\\realisticVision_v30VAE",
+    controlnet=[controlnet1, controlnet2],
+    torch_dtype=torch.float16
+).to('cuda')
+
+# pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 pipe.enable_model_cpu_offload()
 
 # generate image
 image = pipe(
-    "a handsome man with ray-ban sunglasses",
-    num_inference_steps=20,
+    "a man",
+    num_inference_steps=30,
+    guidance_scale=7.5,
     generator=generator,
-    eta=1.0,
-    image=init_image,
-    mask_image=mask_image,
+    strength=0.8,
+    image=[img],
+    mask_image=[mask_img],
     control_image=control_image,
 ).images[0]
 image.show()
-
 

@@ -6,32 +6,26 @@
 # @Version：V1.0
 import decimal
 import os.path
+import random
+import time
+import uuid
 
 import cv2
 import numpy as np
 import torch
 from PIL import Image, ImageOps
+from datetime import datetime, timedelta
+import json
 
-# img_w, img_h = image.size
-# my_logger.info('img size：%d ,%d', img_w, img_h)
-# if img_w > w or img_h > h:
-#     ratio_w = img_w / w
-#     ratio_h = img_h / h
-#     ratio = max(ratio_w, ratio_h)
-#     img_w = int(img_w / ratio)
-#     img_h = int(img_h / ratio)
-#     my_logger.info('img handle size：%d ,%d', img_w, img_h)
-#     image = image.resize((img_w, img_h))
+str = '000000005099746_11_1'
 
-# im = cv2.imread('./768.jpg')
-# h, w, c = im.shape
-# im = cv2.resize(im, (768, 1024), interpolation=cv2.INTER_LINEAR)
-# cv2.imwrite('768x1024.jpg', im)
+# hex_num = hex(9999999)
+# print(hex_num)
 
-# i = 46815649846516843518648
-# generator = torch.Generator(device='cpu')
-# seeds = [generator.seed() if len(str(generator.seed())) < 10 else generator.seed() for _ in range(3)]
-basic_size = (512, 768)
-w, h = basic_size
-print(w)
-print(h)
+print(int('0xfffffff', 16))
+
+
+print(type(5099746))
+
+model_id = '../models/Stable-Diffusion/stable-diffusion-xl-1.0-inpainting-0.1/'
+print('-xl-' in model_id)

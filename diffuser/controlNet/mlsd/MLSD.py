@@ -4,24 +4,107 @@
 # @Time：2023/3/20 11:13
 # @Website：www.xxx.com
 # @Version：V1.0
-import sys
 import time
-from enum import Enum
 
 import cv2
+import numpy
 import numpy as np
 import torch
 from PIL import Image
 from controlnet_aux import MLSDdetector
-# from controlnet_aux.mlsd import MobileV2_MLSD_Large, apply_mlsd
 from controlnet_aux.util import HWC3
-from einops import rearrange
 
-from lvminthin import nake_nms, lvmin_thin
-from utils.util import resize_image
+# from diffuser.controlNet.lvminthin import nake_nms, lvmin_thin
 
 
-def detectmap_proc(detected_map, module, resize_mode, h, w):
+def pil_to_cv2(im):
+    return cv2.cvtColor(numpy.array(im), cv2.COLOR_RGB2BGR)
+
+
+def gray_to_pil(img_bgr):
+    return Image.fromarray(cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB))
+
+lvmin_kernels_raw = [
+    np.array([
+        [-1, -1, -1],
+        [0, 1, 0],
+        [1, 1, 1]
+    ], dtype=np.int32),
+    np.array([
+        [0, -1, -1],
+        [1, 1, -1],
+        [0, 1, 0]
+    ], dtype=np.int32)
+]
+
+lvmin_kernels = []
+lvmin_kernels += [np.rot90(x, k=0, axes=(0, 1)) for x in lvmin_kernels_raw]
+lvmin_kernels += [np.rot90(x, k=1, axes=(0, 1)) for x in lvmin_kernels_raw]
+lvmin_kernels += [np.rot90(x, k=2, axes=(0, 1)) for x in lvmin_kernels_raw]
+lvmin_kernels += [np.rot90(x, k=3, axes=(0, 1)) for x in lvmin_kernels_raw]
+
+lvmin_prunings_raw = [
+    np.array([
+        [-1, -1, -1],
+        [-1, 1, -1],
+        [0, 0, -1]
+    ], dtype=np.int32),
+    np.array([
+        [-1, -1, -1],
+        [-1, 1, -1],
+        [-1, 0, 0]
+    ], dtype=np.int32)
+]
+
+lvmin_prunings = []
+lvmin_prunings += [np.rot90(x, k=0, axes=(0, 1)) for x in lvmin_prunings_raw]
+lvmin_prunings += [np.rot90(x, k=1, axes=(0, 1)) for x in lvmin_prunings_raw]
+lvmin_prunings += [np.rot90(x, k=2, axes=(0, 1)) for x in lvmin_prunings_raw]
+lvmin_prunings += [np.rot90(x, k=3, axes=(0, 1)) for x in lvmin_prunings_raw]
+
+
+def remove_pattern(x, kernel):
+    objects = cv2.morphologyEx(x, cv2.MORPH_HITMISS, kernel)
+    objects = np.where(objects > 127)
+    x[objects] = 0
+    return x, objects[0].shape[0] > 0
+
+
+def thin_one_time(x, kernels):
+    y = x
+    is_done = True
+    for k in kernels:
+        y, has_update = remove_pattern(y, k)
+        if has_update:
+            is_done = False
+    return y, is_done
+
+
+def lvmin_thin(x, prunings=True):
+    y = x
+    for i in range(32):
+        y, is_done = thin_one_time(y, lvmin_kernels)
+        if is_done:
+            break
+    if prunings:
+        y, _ = thin_one_time(y, lvmin_prunings)
+    return y
+
+
+def nake_nms(x):
+    f1 = np.array([[0, 0, 0], [1, 1, 1], [0, 0, 0]], dtype=np.uint8)
+    f2 = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]], dtype=np.uint8)
+    f3 = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.uint8)
+    f4 = np.array([[0, 0, 1], [0, 1, 0], [1, 0, 0]], dtype=np.uint8)
+    y = np.zeros_like(x)
+    for f in [f1, f2, f3, f4]:
+        np.putmask(y, cv2.dilate(x, kernel=f) == x, x)
+    return y
+
+
+
+def detectmap_proc(detected_map, module, resize_mode, h, w) -> Image:
+    print(f"detectmap_proc: module={module},resize_mode={resize_mode}, h={h}, w = {w}")
     if 'inpaint' in module:
         detected_map = detected_map.astype(np.float32)
     else:
@@ -36,19 +119,6 @@ def detectmap_proc(detected_map, module, resize_mode, h, w):
         y = np.ascontiguousarray(y)
         y = y.copy()
         return y
-
-    # def get_pytorch_control(x):
-    #     # A very safe method to make sure that Apple/Mac works
-    #     y = x
-    #
-    #     # below is very boring but do not change these. If you change these Apple or Mac may fail.
-    #     y = torch.from_numpy(y)
-    #     y = y.float() / 255.0
-    #     y = rearrange(y, 'h w c -> c h w')
-    #     y = y.clone()
-    #     y = y.to(devices.get_device_for("controlnet"))
-    #     y = y.clone()
-    #     return y
 
     def high_quality_resize(x, size):
         # Written by lvmin
@@ -103,7 +173,7 @@ def detectmap_proc(detected_map, module, resize_mode, h, w):
     if resize_mode == 'Just Resize':
         detected_map = high_quality_resize(detected_map, (w, h))
         detected_map = safe_numpy(detected_map)
-        return detected_map
+        return gray_to_pil(detected_map)
 
     old_h, old_w, _ = detected_map.shape
     old_w = float(old_w)
@@ -127,7 +197,7 @@ def detectmap_proc(detected_map, module, resize_mode, h, w):
         high_quality_background[pad_h:pad_h + new_h, pad_w:pad_w + new_w] = detected_map
         detected_map = high_quality_background
         detected_map = safe_numpy(detected_map)
-        return detected_map
+        return gray_to_pil(detected_map)
     else:
         k = max(k0, k1)
         detected_map = high_quality_resize(detected_map, (safeint(old_w * k), safeint(old_h * k)))
@@ -136,46 +206,19 @@ def detectmap_proc(detected_map, module, resize_mode, h, w):
         pad_w = max(0, (new_w - w) // 2)
         detected_map = detected_map[pad_h:pad_h + h, pad_w:pad_w + w]
         detected_map = safe_numpy(detected_map)
-        return detected_map
+        return gray_to_pil(detected_map)
 
 
-def pad64(x):
-    return int(np.ceil(float(x) / 64.0) * 64 - x)
+model_path = 'C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\ckpts'
+img_path = '../../../img/control/room.png'
+target_W = 1024
+target_H = 1024
+mlsd = MLSDdetector.from_pretrained(model_path)
 
-
-def safer_memory(x):
-    # Fix many MAC/AMD problems
-    return np.ascontiguousarray(x.copy()).copy()
-
-
-def resize_image_with_pad(input_image, resolution):
-    img = HWC3(input_image)
-    H_raw, W_raw, _ = img.shape
-    k = float(resolution) / float(min(H_raw, W_raw))
-    interpolation = cv2.INTER_CUBIC if k > 1 else cv2.INTER_AREA
-    H_target = int(np.round(float(H_raw) * k))
-    W_target = int(np.round(float(W_raw) * k))
-    img = cv2.resize(img, (W_target, H_target), interpolation=interpolation)
-    H_pad, W_pad = pad64(H_target), pad64(W_target)
-    img_padded = np.pad(img, [[0, H_pad], [0, W_pad], [0, 0]], mode='edge')
-
-    def remove_pad(x):
-        return safer_memory(x[:H_target, :W_target])
-
-    return safer_memory(img_padded), remove_pad
-
-
-mlsd = MLSDdetector.from_pretrained('C:\\Users\\bbw\\.cache\\huggingface\\hub\\models--lllyasviel--ControlNet\\snapshots\\e78a8c4a5052a238198043ee5c0cb44e22abb9f7\\annotator\\ckpts')
-
-
-
-
-
-# image = Image.open('../test_img/' + sys.argv[1])
-image = cv2.imread('../../img/control/shinei.png')
+image = cv2.imread(img_path)
 s = time.time()
 image = mlsd(image)
+rs_img = detectmap_proc(pil_to_cv2(image), 'mlsd', 'Crop and Resize', target_H, target_W)
 spend = time.time() - s
 print(spend)
-image.save('mlsd_scribble_out.png')
-# cv2.imwrite('mlsd_scribble_out.png', image)
+rs_img.show()

@@ -4,7 +4,7 @@
 # @Time：2023/6/19 16:39
 # @Website：www.xxx.com
 # @Version：V1.0
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusionPipeline, StableDiffusionXLPipeline
 import torch
 from PIL import Image
 
@@ -26,3 +26,4 @@ images = pipeline(
     generator=torch.manual_seed(0),
 ).images[0]
 images.save('test.png')
+StableDiffusionXLPipeline

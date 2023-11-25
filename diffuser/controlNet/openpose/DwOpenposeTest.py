@@ -4,6 +4,7 @@
 # @Time：2023/9/1 14:21
 # @Website：www.xxx.com
 # @Version：V1.0
+import time
 
 import cv2
 import numpy as np
@@ -116,9 +117,12 @@ onnx_det = 'C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\ckp
 onnx_pose = 'C:\\work\\pythonProject\\aidazuo\\models\\ControlNet\\annotator\\ckpts\\dw-ll_ucoco_384.pth'
 det_config = './yolox_config/yolox_l_8xb8-300e_coco.py'
 pose_config = './dwpose_config/dwpose-l_384x288.py'
-img_path = 'C:\\Users\\bbw\\Desktop\\8eb316ba8f2642ada2c0a39206b21992.jpg'
-dw_pose = DWposeDetector(det_config=det_config, det_ckpt=onnx_det, pose_config=pose_config, pose_ckpt=onnx_pose,
-                         device='cuda')
-im = Image.open(img_path)
-img = dw_pose(im)
+img_path = 'C:\\Users\\bbw\\Desktop\\bigbigai-1697536775609.jpg'
+for _ in range(10):
+    dw_pose = DWposeDetector(det_config=det_config, det_ckpt=onnx_det, pose_config=pose_config, pose_ckpt=onnx_pose,
+                             device='cpu')
+    im = Image.open(img_path)
+    s = time.time()
+    img = dw_pose(im)
+    print(f'consuming time = {time.time() - s}')
 img.show()
