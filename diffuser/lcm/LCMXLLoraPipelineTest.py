@@ -16,7 +16,7 @@ pipe = StableDiffusionXLPipeline.from_pretrained(model_path,
                                                  variant="fp16").to('cuda')
 pipe.load_lora_weights(lora_path)
 # pipe.fuse_lora()
-pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
+# pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
 
 prompt_lst = [
     "Self-portrait oil painting, a beautiful cyborg with golden hair, 8k",

@@ -15,7 +15,7 @@ def load_embeddings(embeddings, pipeline):
     for emb in embeddings:
         if emb.endswith('.pt'):
             token = emb.lower().split('.')[0]
-            print('load embedding: %s', emb)
+            print('load embedding: ', emb)
             pipeline.load_textual_inversion(os.path.join('C:\\work\\pythonProject\\aidazuo\\models\\Embedding', emb),
                                             token,
                                             torch_dtype=torch.float16)
@@ -29,7 +29,6 @@ ip_adapter_path = 'C:\\work\\pythonProject\\aidazuo\\models\\IP-Adapter'
 
 canny_img_path = 'C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\tmpsljqx8s_.png'
 depth_img_path = 'C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\tmp3jc1p7_9.png'
-source_img_path = 'C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\20231125-153034.jpg'
 ip_img_path = 'C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\20231125-153039.jpg'
 
 canny_control = ControlNetModel.from_pretrained(canny_model_path, variant="fp16", torch_dtype=torch.float16).to('cuda')
@@ -44,7 +43,7 @@ pipe = StableDiffusionControlNetPipeline.from_pretrained(
     torch_dtype=torch.float16,
     vae=vae).to("cuda")
 
-pipe.load_ip_adapter(ip_adapter_path, subfolder="models", weight_name="ip-adapter_sd15.bin")
+pipe.load_ip_adapter(ip_adapter_path, subfolder="models", weight_name="ip-adapter-plus_sd15.bin")
 
 pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
 
@@ -55,12 +54,13 @@ depth_img = Image.open(depth_img_path)
 ip_adapter_img = Image.open(ip_img_path)
 
 images = pipe(
-    prompt='a coffee machine,white background',
+    prompt='a coffee machine',
     image=[canny_img, depth_img],
     ip_adapter_image=ip_adapter_img,
     negative_prompt="easynegative,badhandv4",
     num_inference_steps=30,
     controlnet_conditioning_scale=[1.0, 1.0],
+    num_images_per_prompt=1,
     width=512,
     height=768
 ).images

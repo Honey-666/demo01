@@ -7,37 +7,46 @@
 import time
 
 import torch
+from PIL import Image
 from diffusers import UNet2DConditionModel, LCMScheduler
 
-from stable_diffusion_xl_reference import StableDiffusionXLPipeline
+from stable_diffusion_xl_reference import StableDiffusionXLReferencePipeline
 
 model_path = 'C:\\work\\pythonProject\\aidazuo\\models\\Stable-diffusion\\sd_xl_base_1.0'
 lcm_path = 'C:\\work\\pythonProject\\aidazuo\\models\\Stable-diffusion\\lcm-sdxl'
-img_path = 'C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\20231125-153039.jpg'
+img_path = 'C:\\work\\pythonProject\\aidazuo\\jupyter-script\\test-img\\vermeer.png'
 
 unet = UNet2DConditionModel.from_pretrained(
     lcm_path,
     torch_dtype=torch.float16,
     variant="fp16")
 
-pipe = StableDiffusionXLPipeline.from_pretrained(
+pipe = StableDiffusionXLReferencePipeline.from_pretrained(
     model_path,
     unet=unet,
     torch_dtype=torch.float16
 ).to("cuda")
 pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
 
-prompt = "Self-portrait oil painting, a beautiful cyborg with golden hair, 8k"
+prompt = "a beautiful girl"
 num_inference_steps = 8
+ref_img = Image.open(img_path)
 # generator = torch.manual_seed(0)
 
 s = time.time()
 images = pipe(prompt=prompt,
-              ref_image=None,
+              ref_image=ref_img,
               num_inference_steps=num_inference_steps,
-              guidance_scale=8.0,
-              width=1024,
-              height=1024).images
+              reference_attn=True,
+              reference_adain=False,
+              style_fidelity=0.8,
+              attention_auto_machine_weight=1.0,
+              guidance_scale=0).images
 print(f'consuming time = {time.time() - s}')
 images[0].show()
+
+
 # print(images)
+
+
+
