@@ -7,7 +7,7 @@
 import time
 
 import torch
-from diffusers import StableDiffusionXLPipeline, UNet2DConditionModel, LCMScheduler
+from diffusers import StableDiffusionXLPipeline, UNet2DConditionModel, LCMScheduler,StableDiffusionLatentUpscalePipeline
 
 model_path = '../models/Stable-diffusion/sd_xl_base_1.0'
 lcm_path = '../models/Stable-diffusion/lcm-sdxl'
