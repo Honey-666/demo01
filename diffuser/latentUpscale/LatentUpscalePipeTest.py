@@ -8,30 +8,38 @@ import os
 
 from PIL import Image
 
-from diffusers import StableDiffusionPipeline,StableDiffusionLatentUpscalePipeline, DPMSolverMultistepScheduler
+from diffusers import StableDiffusionLatentUpscalePipeline, StableDiffusionPipeline, DPMSolverMultistepScheduler, \
+    UniPCMultistepScheduler
 import torch
 
-model_id = "/data/sd-x2-latent-upscaler"
+v15_path = 'C:\\work\\pythonProject\\aidazuo\\models\\Stable-diffusion\\stable-diffusion-v1-5'
+model_id = "C:\\work\\pythonProject\\aidazuo\\models\\Stable-diffusion\\sd-x2-latent-upscaler"
+
+pipeline = StableDiffusionPipeline.from_pretrained(v15_path, torch_dtype=torch.float16).to("cuda")
+
 upscaler = StableDiffusionLatentUpscalePipeline.from_pretrained(model_id,
                                                                 torch_dtype=torch.float16,
-                                                                revision="fp16").to("cuda")
+                                                                variant='fp16').to("cuda")
+pipeline.scheduler = DPMSolverMultistepScheduler.from_config(pipeline.scheduler.config)
+# upscaler.scheduler = UniPCMultistepScheduler.from_config(upscaler.scheduler.config)
 
-files = os.listdir('./shinei')
+prompt = "a photo of an astronaut high resolution, unreal engine, ultra realistic"
+generator = torch.manual_seed(33)
 
-for f in files:
-    print(f)
-    filename = f.split('.')[0]
-    image = Image.open('./shinei/' + f)
+low_res_latents = pipeline(prompt, generator=generator, output_type="latent",num_inference_steps=20).images
 
-    prompt = ""
+with torch.no_grad():
+    image = pipeline.decode_latents(low_res_latents)
+image = pipeline.numpy_to_pil(image)[0]
 
-    upscaled_image = upscaler(
-        prompt=prompt,
-        image=image,
-        num_inference_steps=30
-    ).images[0]
+print(image)
 
-    upscaled_image.save("./shinei/" + filename + "_upscale.jpg")
+upscaled_image = upscaler(
+    prompt=prompt,
+    image=low_res_latents,
+    num_inference_steps=20,
+    guidance_scale=0,
+    generator=generator,
+).images[0]
 
-repo_id = ''
-StableDiffusionPipeline.from_ckpt(repo_id)
+upscaled_image.show()

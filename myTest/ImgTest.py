@@ -5,6 +5,7 @@
 # @Website：www.xxx.com
 # @Version：V1.0
 import io
+import json
 
 import cv2
 import numpy as np
@@ -111,11 +112,3 @@ def fill_white_area(background_img_path, overlay_img_path, source_img_path):
 # source_img = fill_white_area(mask_path, img_path, rs_path)
 # source_img.show()
 
-# def get_oss_img(url):
-#     response = requests.get(url, timeout=5)
-#     response.raise_for_status()
-#     return io.BytesIO(response.content)
-#
-#
-# bytes_img = get_oss_img("https://apin.bigurl.ink/ai-pin/d4a78972-9a66-11ee-a980-5d00e08b9823.jpeg?Expires=1703140651&OSSAccessKeyId=LTAItRs09iNMHxzc&Signature=pXL0MDeyJ5KSYIMxgdWrjTxAeeI%3D")
-# print(bytes_img)
